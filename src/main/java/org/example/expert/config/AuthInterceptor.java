@@ -2,18 +2,18 @@ package org.example.expert.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.example.expert.domain.user.enums.UserRole;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import static org.example.expert.domain.user.enums.UserRole.ADMIN;
 
 public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
-                             Object handler) {
-        if (request.getAttribute("userRole") != ADMIN) {
+                             Object handler) throws Exception {
+        if (!UserRole.ADMIN.name().equals(request.getAttribute("userRole"))) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "접근 권한이 없습니다.");
             return false;
         }
         request.setAttribute("startTime", System.currentTimeMillis());
@@ -27,6 +27,4 @@ public class AuthInterceptor implements HandlerInterceptor {
         System.out.println("소요 시간: " + (System.currentTimeMillis() - start) + "ms");
         System.out.println("요청 경로: " + request.getRequestURL());
     }
-
-
 }
